@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -25,6 +26,7 @@ public class Game {
     private static Button enter;
     private static ImageView[][] enemy_grid = new ImageView[10][10];
     public static ImageView[][] player_grid = new ImageView[10][10];
+    private static boolean[][] wasHit = new boolean[10][10];
 
     protected static ShipOrientation playerShips = new ShipOrientation();
     private static ShipOrientation enemyShips = new ShipOrientation();
@@ -85,13 +87,13 @@ public class Game {
     private static void showBoatOnGrid(int col1, int row1, int col2, int row2){
         if (col1 == col2) {
             for (int i = row1; i <= row2; ++i) {
-                player_grid[col1][i].setImage(new Image("battleship_images/grid_box_w_ship.png", 30, 30,
+                player_grid[col1][i].setImage(new Image("resources/grid_box_w_ship.png", 30, 30,
                         false, false));
             }
         }
         else if (row1 == row2) {
             for (int i = col1; i <= col2; ++i) {
-                player_grid[i][row1].setImage(new Image("battleship_images/grid_box_w_ship.png", 30, 30,
+                player_grid[i][row1].setImage(new Image("resources/grid_box_w_ship.png", 30, 30,
                         false, false));
             }
         }
@@ -133,7 +135,7 @@ public class Game {
                 currentPrompt =
                         "Placing carrier..." +
                         "\nEnter the coordinates of the aircraft carrier" +
-                        "(length 5)";
+                        "\n(length 5)";
                 textArea.setText(currentPrompt);
                 currentShipIDLength = 4;
                 showBoatOnGrid(col1, row1, col2, row2);
@@ -159,10 +161,14 @@ public class Game {
         textArea.setPrefSize(260, 115);
         textArea.setDisable(true);
         userIn1 = new TextArea();
+        userIn1.setTextFormatter(new TextFormatter<String>(change ->
+                change.getControlNewText().length() <= 2 ? change : null));
         userIn1.setLayoutX(textArea.getLayoutX());
         userIn1.setLayoutY(textArea.getLayoutY() + 125);
         userIn1.setMaxSize(40, 15);
         userIn2 = new TextArea();
+        userIn2.setTextFormatter(new TextFormatter<String>(change ->
+                change.getControlNewText().length() <= 2 ? change : null));
         userIn2.setLayoutX(userIn1.getLayoutX() + 50);
         userIn2.setLayoutY(textArea.getLayoutY() + 125);
         userIn2.setMaxSize(40, 15);
@@ -241,10 +247,12 @@ public class Game {
     }
 
     public static void disableGridButtons(boolean bool) {
-        for (int i = 0; i < enemy_grid.length; ++i)
+        for (int i = 0; i < enemy_grid.length; ++i) {
             for (int j = 0; j < enemy_grid[i].length; ++j) {
-                enemy_grid[i][j].setDisable(bool);
+                if (!wasHit[i][j])
+                    enemy_grid[i][j].setDisable(bool);
             }
+        }
     }
 
     private static void createScene(Stage stage) {
@@ -257,7 +265,7 @@ public class Game {
 
         for (int i = 0; i < enemy_grid.length; ++i) {
             for (int j = 0; j < enemy_grid[i].length; ++j) {
-                enemy_grid[i][j] = new ImageView(new Image("battleship_images/grid_box.png", 40, 40,
+                enemy_grid[i][j] = new ImageView(new Image("resources/grid_box.png", 40, 40,
                         false, false));
                 enemy_grid[i][j].setLayoutX(game_scene.getWidth()/2 + j*40);
                 enemy_grid[i][j].setLayoutY(game_scene.getHeight()/2 - game_scene.getHeight()/5 + i*40);
@@ -271,13 +279,17 @@ public class Game {
                         int x_index = (int)(x-450)/40;
                         int y_index = (int)(y-180)/40;
                         if(enemyShips.userBoatLocation[y_index][x_index] != null){
-                            enemy_grid[y_index][x_index].setImage(new Image("battleship_images/hit.png", 40, 40,
+                            enemy_grid[y_index][x_index].setImage(new Image("resources/hit.png", 40, 40,
                             false, false));
                             enemyShips.userBoatLocation[y_index][x_index] = null;
+                            wasHit[y_index][x_index] = true;
+
                         } else {
-                            enemy_grid[y_index][x_index].setImage(new Image("battleship_images/miss.png", 40, 40,
+                            enemy_grid[y_index][x_index].setImage(new Image("resources/miss.png", 40, 40,
                                     false, false));
+                            wasHit[y_index][x_index] = true;
                         }
+                        playerShips.updateRemainingShips();
                         if(enemyShips.allShipsSunk())
                             endGame();
                         else
@@ -290,7 +302,7 @@ public class Game {
         }
         for (int i = 0; i < player_grid.length; ++i) {
             for (int j = 0; j < player_grid[i].length; ++j) {
-                player_grid[i][j] = new ImageView(new Image("battleship_images/grid_box.png", 30, 30,
+                player_grid[i][j] = new ImageView(new Image("resources/grid_box.png", 30, 30,
                         false, false));
                 player_grid[i][j].setLayoutX(enemy_grid[0][0].getLayoutX() - 30*10 - 40
                         + j*30);
@@ -339,7 +351,7 @@ public class Game {
         player.setLayoutY(player_columns.getLayoutY() - 30);
         root.getChildren().addAll(player, opponent);
 
-        Image title = new Image("battleship_images/title.png",200,
+        Image title = new Image("resources/title.png",200,
                 50, false, true);
         ImageView title_text = new ImageView(title);
         title_text.setLayoutX(3*game_scene.getWidth()/5);

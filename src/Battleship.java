@@ -21,9 +21,9 @@ public class Battleship extends Application{
         Group root = new Group();
         Scene main_menu = new Scene(root,600, 400);
 
-        ImageView menu_image = new ImageView(new Image("battleship_images/battleship_image.jpg",main_menu.getWidth(),
+        ImageView menu_image = new ImageView(new Image("resources/battleship_image.jpg",main_menu.getWidth(),
                 main_menu.getHeight(), false, false));
-        ImageView title_text = new ImageView(new Image("battleship_images/title.png",200,
+        ImageView title_text = new ImageView(new Image("resources/title.png",200,
                 50, false, true));
         title_text.setLayoutX(main_menu.getWidth()/2 - main_menu.getWidth()/10);
         title_text.setLayoutY(main_menu.getHeight()/2 - main_menu.getHeight()/4);
@@ -36,14 +36,7 @@ public class Battleship extends Application{
                 new Game(primaryStage);
             }
         });
-        Button howToPlay = new Button("How To Play");
-        howToPlay.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                new Game(primaryStage);
-            }
-        });
-        button_list.getChildren().addAll(playGame, howToPlay);
+        button_list.getChildren().addAll(playGame);
         button_list.setAlignment(Pos.CENTER);
         button_list.setSpacing(15);
         button_list.setLayoutX(main_menu.getWidth()/2);
@@ -52,7 +45,7 @@ public class Battleship extends Application{
 
         primaryStage.setTitle("Battleship 1.0");
         primaryStage.setScene(main_menu);
-        primaryStage.getIcons().add(new Image("battleship_images/icon.png"));
+        primaryStage.getIcons().add(new Image("resources/icon.png"));
         primaryStage.sizeToScene();
         primaryStage.centerOnScreen();
         primaryStage.setResizable(false);

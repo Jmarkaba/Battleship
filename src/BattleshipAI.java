@@ -32,13 +32,13 @@ public class BattleshipAI {
         possibility_matrix[tar_x][tar_y] = 0;
         if (Game.playerShips.userBoatLocation[tar_x][tar_y] != null) {
             Game.player_grid[tar_x][tar_y].setImage(
-                    new Image("battleship_images/enemy_hit.png", 30, 30 , false, false));
+                    new Image("resources/enemy_hit.png", 30, 30 , false, false));
             results[tar_x][tar_y] = 1;
             Game.playerShips.userBoatLocation[tar_x][tar_y] = null;
             setLastShotSucceeded(true);
         } else {
             Game.player_grid[tar_x][tar_y].setImage(
-                    new Image("battleship_images/enemy_miss.png", 30, 30, false, false));
+                    new Image("resources/enemy_miss.png", 30, 30, false, false));
             results[tar_x][tar_y] = 1;
             Game.playerShips.userBoatLocation[tar_x][tar_y] = null;
             setLastShotSucceeded(false);
@@ -51,7 +51,7 @@ public class BattleshipAI {
         int row; // -------> 1 through 10
 
         if(turnNumber > 0) {
-            if(getLastShotSucceeded()) {
+            if(getLastShotSucceeded() && potential_targets.size() != 0) {
                 assignTargetBasedOnHit();
                 int choice = (int) (Math.random()*(potential_targets.size()));
                 int choiceNum = choice;

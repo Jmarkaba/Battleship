@@ -6,18 +6,77 @@ public class ShipOrientation {
     public String[][] userBoatLocation = new String[10][10];
     public Boat userDestroyer, userCruiser, userSub, userBattleship, userCarrier;
 
-    public ShipOrientation() {}
-
-    public void createRandomOrientation() {
+    public ShipOrientation() {
         for(int i = 0; i < points.length; ++i) {
             for(int j = 0; j < points[i].length; ++j) {
                 points[i][j] = new Point( i+1, j+1);
             }
         }
-        Point destroyerStart = points[0][0];
-        Point destroyerEnd = new Point((int)destroyerStart.getX(),(int)destroyerStart.getY()+2);
-        userDestroyer = new Boat("Destroyer", 2);
-        this.addBoat(userDestroyer, new Point(0, 1), new Point(0, 2));
+    }
+
+    private void createRandomShipSetup(String boatType, int boatLength) {
+        try {
+            Point start = points[(int)(Math.random()*10)][(int)(Math.random()*10)];
+            if (start != null) {
+                boolean canPlace = true;
+                switch (choosePathXOrY()) {
+                    case 'x':
+                        for(int i = (int)start.getX(); i < start.getX()+boatLength; ++i) {
+                            if(points[i][(int)start.getY()] == null) {
+                                canPlace = false;
+                            }
+                        }
+                        if(canPlace) {
+                            Point end = new Point((int) start.getX() + (boatLength-1), (int)start.getY());
+                            Boat b = new Boat(boatType, boatLength);
+                            this.addBoat(b, start, end);
+                            for(int i = (int)start.getX(); i < start.getX()+boatLength; ++i) {
+                                points[i][(int)start.getY()] = null;
+                            }
+                        } else {
+                            createRandomShipSetup(boatType, boatLength);
+                        }
+                        break;
+                    case 'y':
+                        for(int i = (int)start.getY(); i < start.getY()+boatLength; ++i) {
+                            if(points[(int)start.getX()][i] == null) {
+                                canPlace = false;
+                            }
+                        }
+                        if(canPlace) {
+                            Point end = new Point((int) start.getX(), (int)start.getY() + (boatLength-1));
+                            Boat b = new Boat(boatType, boatLength);
+                            this.addBoat(b, start, end);
+                            for(int i = (int)start.getY(); i < start.getY()+boatLength; ++i) {
+                                points[i][(int)start.getY()] = null;
+                            }
+                        } else {
+                            createRandomShipSetup(boatType, boatLength);
+                        }
+                        break;
+                }
+            } else {
+                createRandomShipSetup(boatType, boatLength);
+            }
+        } catch (Exception e) {
+            createRandomShipSetup(boatType, boatLength);
+        }
+    }
+
+    public void createRandomOrientation() {
+        createRandomShipSetup("Carrier", 5);
+        createRandomShipSetup("Battleship", 4);
+        createRandomShipSetup("Submarine", 3);
+        createRandomShipSetup("Cruiser", 3);
+        createRandomShipSetup("Destroyer", 2);
+    }
+
+    private char choosePathXOrY() {
+        int choice = (int)(Math.random()*2);
+        if(choice == 0)
+            return 'x';
+        else
+            return 'y';
     }
 
     public boolean isOverlapping(int col1, int row1, int col2, int row2) {
@@ -65,8 +124,8 @@ public class ShipOrientation {
 
     public void updateRemainingShips() {
         int destroyerSpots = 0, cruiserSpots = 0, subSpots = 0, battleshipSpots = 0, carrierSpots = 0;
-        for(String[] sArr : userBoatLocation) {
-            for(String s: sArr) {
+        for(String[] sArg : userBoatLocation) {
+            for(String s: sArg) {
                 if(s == "Destroyer")
                     ++destroyerSpots;
                 if(s == "Cruiser")

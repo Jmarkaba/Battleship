@@ -1,6 +1,10 @@
+import java.awt.*;
+
 public class Boat {
 
     private String boatType;
+    private Point start;
+    private Point end;
     private int boatLength;
     private boolean sunk = false;
 
