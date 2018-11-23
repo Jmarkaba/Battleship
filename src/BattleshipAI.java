@@ -16,9 +16,9 @@ public class BattleshipAI {
     public static void beginTurn() {
         shoot();
         turnNumber++;
-        Game.playerShips.updateRemainingShips();
-        if(Game.playerShips.allShipsSunk())
-            Game.endGame();
+        Battleship.g.playerShips.updateRemainingShips();
+        if(Battleship.g.playerShips.allShipsSunk())
+            Battleship.g.endGame();
         else
             Game.continueGame();
 
@@ -30,17 +30,17 @@ public class BattleshipAI {
         int tar_y = (int) tar.getY();
         lastShot = tar;
         possibility_matrix[tar_x][tar_y] = 0;
-        if (Game.playerShips.userBoatLocation[tar_x][tar_y] != null) {
+        if (Battleship.g.playerShips.userBoatLocation[tar_x][tar_y] != 0) {
             Game.player_grid[tar_x][tar_y].setImage(
                     new Image("resources/enemy_hit.png", 30, 30 , false, false));
             results[tar_x][tar_y] = 1;
-            Game.playerShips.userBoatLocation[tar_x][tar_y] = null;
+            Battleship.g.playerShips.userBoatLocation[tar_x][tar_y] = 0;
             setLastShotSucceeded(true);
         } else {
             Game.player_grid[tar_x][tar_y].setImage(
                     new Image("resources/enemy_miss.png", 30, 30, false, false));
             results[tar_x][tar_y] = 1;
-            Game.playerShips.userBoatLocation[tar_x][tar_y] = null;
+            Battleship.g.playerShips.userBoatLocation[tar_x][tar_y] = 0;
             setLastShotSucceeded(false);
         }
     }
@@ -51,17 +51,8 @@ public class BattleshipAI {
         int row; // -------> 1 through 10
 
         if(turnNumber > 0) {
-            if(getLastShotSucceeded() && potential_targets.size() != 0) {
+            if(getLastShotSucceeded())
                 assignTargetBasedOnHit();
-                int choice = (int) (Math.random()*(potential_targets.size()));
-                int choiceNum = choice;
-                System.out.println("Based on hit " + choice + " pot_tar_size " + potential_targets.size());
-                target = potential_targets.get(choiceNum);
-                System.out.println(potential_targets);
-                System.out.println(target);
-                potential_targets.remove(choiceNum);
-                System.out.println(potential_targets);
-            } else {
                 if(potential_targets.size() == 0) {
                     assignTargetBasedOnProbability();
                     int choice = (int) (Math.random()*(potential_targets.size()));
@@ -79,7 +70,6 @@ public class BattleshipAI {
                     System.out.println(target);
                     System.out.println(potential_targets);
                 }
-            }
 
         } else {
             column = (int) (10 * (Math.random()));
@@ -173,15 +163,15 @@ public class BattleshipAI {
             for (int j = 0; j < results[i].length; ++j) {
                 if (results[i][j] == 0) {
                     int possibilities = 0;
-                    if (Game.playerShips.userCarrier.isUnSunk())
+                    if (!Battleship.g.playerShips.getUserCarrier().isSunk())
                         possibilities += possibilitiesWithCarrierLeft(i, j);
-                    if (Game.playerShips.userBattleship.isUnSunk())
+                    if (!Battleship.g.playerShips.getUserBattleship().isSunk())
                         possibilities += possibilitiesWithBattleshipLeft(i, j);
-                    if (Game.playerShips.userCruiser.isUnSunk())
+                    if (!Battleship.g.playerShips.getUserCruiser().isSunk())
                         possibilities += possibilitiesWithCruiserOrSubLeft(i, j);
-                    if (Game.playerShips.userSub.isUnSunk())
+                    if (!Battleship.g.playerShips.getUserSub().isSunk())
                         possibilities += possibilitiesWithCruiserOrSubLeft(i, j);
-                    if (Game.playerShips.userDestroyer.isUnSunk())
+                    if (!Battleship.g.playerShips.getUserDestroyer().isSunk())
                         possibilities += possibilitiesWithDestroyerLeft(i, j);
                     possibility_matrix[i][j] = possibilities;
                 } else { possibility_matrix[i][j] = 0; }

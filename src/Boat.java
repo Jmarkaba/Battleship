@@ -1,28 +1,25 @@
-import java.awt.*;
-
 public class Boat {
 
-    private String boatType;
-    private Point start;
-    private Point end;
+    private int boatType;
     private int boatLength;
-    private boolean sunk = false;
+    private boolean sunk;
 
-    public Boat(String boatType, int boatLength) {
+    public Boat(int boatType, int boatLength) {
         this.boatType = boatType;
         this.boatLength = boatLength;
+        sunk = false;
     }
 
     public int getBoatLength() {
         return boatLength;
     }
 
-    public String getBoatType() {
+    public int getBoatType() {
         return boatType;
     }
 
-    public boolean isUnSunk() {
-        return !sunk;
+    public boolean isSunk() {
+        return sunk;
     }
 
     public void setSunk(boolean b) {

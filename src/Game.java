@@ -28,13 +28,13 @@ public class Game {
     public static ImageView[][] player_grid = new ImageView[10][10];
     private static boolean[][] wasHit = new boolean[10][10];
 
-    protected static ShipOrientation playerShips = new ShipOrientation();
-    private static ShipOrientation enemyShips = new ShipOrientation();
+    public ShipOrientation playerShips = new ShipOrientation();
+    public ShipOrientation enemyShips = new ShipOrientation();
 
     private static String currentPrompt;
     private static int currentShipID = 1;
     private static int currentShipIDLength = 1;
-    protected static boolean player1LastHitSucceeded;
+    public static boolean player1LastHitSucceeded;
 
     public Game(Stage stage) {
         enemyShips.createRandomOrientation();
@@ -75,11 +75,11 @@ public class Game {
         disableGridButtons(false);
     }
 
-    public static void endGame() {
+    public void endGame() {
         textArea.clear();
         if(enemyShips.allShipsSunk())
             textArea.appendText("YOU WIN!");
-        else if(playerShips.allShipsSunk())
+        else if(this.playerShips.allShipsSunk())
             textArea.appendText("YOU LOSE!");
         textArea.appendText("\nGame lasted: " + BattleshipAI.getTurnNumber() + " turns.");
     }
@@ -99,10 +99,10 @@ public class Game {
         }
     }
 
-    private static void createNextBoat(int col1, int row1, int col2, int row2){
+    private void createNextBoat(int col1, int row1, int col2, int row2){
         switch (currentShipID) {
             case 1:
-                playerShips.addBoat(new Boat("Destroyer", 2), new Point(col1, row1), new Point(col2, row2));
+                playerShips.addBoat(new Boat(1, 2), new Point(col1, row1), new Point(col2, row2));
                 currentPrompt =
                         "Placing submarine..." +
                         "\nEnter the coordinates of the submarine " +
@@ -112,7 +112,7 @@ public class Game {
                 showBoatOnGrid(col1, row1, col2, row2);
                 break;
             case 2:
-                playerShips.addBoat(new Boat("Submarine", 3), new Point(col1, row1), new Point(col2, row2));
+                playerShips.addBoat(new Boat(2, 3), new Point(col1, row1), new Point(col2, row2));
                 currentPrompt =
                         "Placing cruiser..." +
                         "\nEnter the coordinates of the cruiser" +
@@ -121,7 +121,7 @@ public class Game {
                 showBoatOnGrid(col1, row1, col2, row2);
                 break;
             case 3:
-                playerShips.addBoat(new Boat("Cruiser", 3), new Point(col1, row1), new Point(col2, row2));
+                playerShips.addBoat(new Boat(3, 3), new Point(col1, row1), new Point(col2, row2));
                 currentPrompt =
                         "Placing battleship..." +
                         "\nEnter the coordinates of the battleship " +
@@ -131,7 +131,7 @@ public class Game {
                 showBoatOnGrid(col1, row1, col2, row2);
                 break;
             case 4:
-                playerShips.addBoat(new Boat("Battleship", 2), new Point(col1, row1), new Point(col2, row2));
+                playerShips.addBoat(new Boat(4, 2), new Point(col1, row1), new Point(col2, row2));
                 currentPrompt =
                         "Placing carrier..." +
                         "\nEnter the coordinates of the aircraft carrier" +
@@ -141,14 +141,14 @@ public class Game {
                 showBoatOnGrid(col1, row1, col2, row2);
                 break;
             case 5:
-                playerShips.addBoat(new Boat("Carrier", 2), new Point(col1, row1), new Point(col2, row2));
+                playerShips.addBoat(new Boat(5, 2), new Point(col1, row1), new Point(col2, row2));
                 showBoatOnGrid(col1, row1, col2, row2);
                 startGame();
                 break;
         }
     }
 
-    private static void promptUserForShips() {
+    private void promptUserForShips() {
         currentPrompt = "Welcome to Battleship!" +
                 "\nPlace your ships on your board." +
                 "\nPlacing destroyer..." +
@@ -162,13 +162,13 @@ public class Game {
         textArea.setDisable(true);
         userIn1 = new TextArea();
         userIn1.setTextFormatter(new TextFormatter<String>(change ->
-                change.getControlNewText().length() <= 2 ? change : null));
+                change.getControlNewText().length() <= 3 ? change : null));
         userIn1.setLayoutX(textArea.getLayoutX());
         userIn1.setLayoutY(textArea.getLayoutY() + 125);
         userIn1.setMaxSize(40, 15);
         userIn2 = new TextArea();
         userIn2.setTextFormatter(new TextFormatter<String>(change ->
-                change.getControlNewText().length() <= 2 ? change : null));
+                change.getControlNewText().length() <= 3 ? change : null));
         userIn2.setLayoutX(userIn1.getLayoutX() + 50);
         userIn2.setLayoutY(textArea.getLayoutY() + 125);
         userIn2.setMaxSize(40, 15);
@@ -255,7 +255,7 @@ public class Game {
         }
     }
 
-    private static void createScene(Stage stage) {
+    private void createScene(Stage stage) {
         /*
         Scene Design of game
          */
@@ -278,10 +278,10 @@ public class Game {
                         double y = event.getSceneY();
                         int x_index = (int)(x-450)/40;
                         int y_index = (int)(y-180)/40;
-                        if(enemyShips.userBoatLocation[y_index][x_index] != null){
+                        if(enemyShips.userBoatLocation[y_index][x_index] != 0){
                             enemy_grid[y_index][x_index].setImage(new Image("resources/hit.png", 40, 40,
                             false, false));
-                            enemyShips.userBoatLocation[y_index][x_index] = null;
+                            enemyShips.userBoatLocation[y_index][x_index] = 0;
                             wasHit[y_index][x_index] = true;
 
                         } else {
@@ -289,7 +289,7 @@ public class Game {
                                     false, false));
                             wasHit[y_index][x_index] = true;
                         }
-                        playerShips.updateRemainingShips();
+                        enemyShips.updateRemainingShips();
                         if(enemyShips.allShipsSunk())
                             endGame();
                         else

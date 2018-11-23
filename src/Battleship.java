@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 public class Battleship extends Application{
 
     protected static Stage primaryStage;
+    public static Game g;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -33,7 +34,7 @@ public class Battleship extends Application{
         playGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                new Game(primaryStage);
+                g = new Game(primaryStage);
             }
         });
         button_list.getChildren().addAll(playGame);
